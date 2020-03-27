@@ -1,0 +1,1391 @@
+/* ROOT */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  font-family: 'Ubuntu';
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: white;
+  background-image: url('./images/8k_stars_milky_way.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+}
+#root {
+  height: 100%;
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+}
+#root section {
+  scroll-snap-align: center;
+}
+
+/* UTILS */
+
+/* Cursor */
+.cursor {
+  pointer-events: none;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 1px solid white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Loading */
+.loading {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+}
+.loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(75deg, transparent, transparent 60%, green);
+  z-index: 2;
+  animation: rotate 2s linear infinite;
+}
+.loading span {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  /* animation: antiRotate 2s linear infinite; */
+}
+@keyframes antiRotate {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg); 
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+    filter: hue-rotate(360deg);
+  }
+}
+.loader::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 95%;
+  width: 95%;
+  transform: translate(-50%, -50%);
+  background-color: black;
+  border-radius: 50%;
+  z-index: 3;
+}
+.loader::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(75deg, transparent, transparent 10%, green);
+  border-radius: 50%;
+  z-index: 1;
+  filter: blur(50px);
+}
+
+/* NavBar */
+.navbar {
+  background-color: transparent;
+  min-height: 15vh;
+  width: 100%;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(12, 1fr);
+  position: fixed;
+}
+.navbar .menu {
+  grid-column: 11 / 13;
+  justify-self: start;
+  align-self: center;
+  background-color: transparent;
+  min-width: 70%;
+  height: 40%;
+  display: grid;
+  grid-auto-flow: column;
+}
+.navbar .menu .icon {
+  width: 80%;
+  height: 2px;
+  justify-self: start;
+  align-self: center;
+  background-color: white;
+  position: relative;
+  transition: .5s;
+}
+.navbar .menu .icon::before {
+  content: '';
+  position: absolute;
+  top: -9px;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  transition: .5s;
+}
+.navbar .menu .icon::after {
+  content: '';
+  position: absolute;
+  top: 9px;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  transition: .5s;
+}
+.navbar .menu .icon.transform {
+  background-color: transparent;
+}
+.navbar .menu .icon.transform::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  transform: rotate(45deg);
+}
+.navbar .menu .icon.transform::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  transform: rotate(-45deg);
+}
+.navbar .menu .text {
+  margin: 0;
+  justify-self: center;
+  align-self: center;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  font-weight: bold;
+  opacity: 0;
+  transition: .5s;
+  transform: translateY(10px);
+}
+.navbar .menu .text.show {
+  opacity: 0.7;
+  transform: translate(0);
+}
+.navbar ul {
+  grid-column: 4 / 10;
+  list-style: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-decoration: none;
+}
+.navbar ul li, 
+.navbar ul li.current {
+  overflow: hidden;
+}
+.navbar ul li a {
+  color: white;
+  background-color: transparent;
+  position: relative;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-decoration: none;
+  letter-spacing: 2px;
+  box-sizing: content-box;
+  padding: 10px 10px;
+  z-index: 20;
+}
+.navbar ul li a.current {
+  animation: glow 1s linear infinite;
+}
+.navbar ul li a.current {
+  /* box-sizing: unset; */
+  padding: 10px 10px;
+  background-color: transparent;
+}
+.navbar ul li a span {
+  position: absolute;
+  /* overflow: hidden; */
+  margin: 20px;
+}
+.navbar ul li a.current span:nth-of-type(1) {
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, white);
+  animation: border-top 1s linear infinite;
+}
+.navbar ul li a.current span:nth-of-type(2) {
+  top: -100%;
+  right: 0;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(180deg, transparent, white);
+  animation: border-right 1s linear infinite;
+  animation-delay: .25s;
+}
+.navbar ul li a.current span:nth-of-type(3) {
+  bottom: 0;
+  right: -100%;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(270deg, transparent, white);
+  animation: border-bottom 1s linear infinite;
+  animation-delay: .5s;
+}
+.navbar ul li a.current span:nth-of-type(4) {
+  bottom: -100%;
+  left: 0;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(360deg, transparent, white);
+  animation: border-left 1s linear infinite;
+  animation-delay: .75s;
+}
+@keyframes border-top {
+  0% {
+    left: -100%;
+  }
+  50%, 100% {
+    left: 100%;
+  }
+}
+@keyframes border-right {
+  0% {
+    top: -100%;
+  }
+  50%, 100% {
+    top: 100%;
+  }
+}
+@keyframes border-bottom {
+  0% {
+    right: -100%;
+  }
+  50%, 100% {
+    right: 100%;
+  }
+}
+@keyframes border-left {
+  0% {
+    bottom: -100%;
+  }
+  50%, 100% {
+    bottom: 100%;
+  }
+}
+
+/* HOME */
+
+section {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+}
+/* HomeScreen */
+section.home-screen h1 {
+  text-transform: uppercase;
+  margin: 0;
+  font-size: 5rem;
+  font-weight: bold;
+  grid-column: 5 / 9;
+  grid-row: 6 / 8;
+  justify-self: center;
+}
+section.home-screen p.before-h1 {
+  grid-column: 7 / 11;
+  grid-row: 3 / 5;
+  margin: 0;
+  font-style: italic;
+  justify-self: center;
+  align-self: center;
+  /* transition: 2s; */
+  animation: popup-p 2s linear 2s infinite ease-out;
+  animation-fill-mode: forwards;
+}
+@keyframes popup-p {
+  0% {
+    opacity: 0;
+    filter: blur(30px);
+    transform: translate(-80px, 80px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    /* transform: translate(0); */
+  }
+}
+section.home-screen p span {
+  font-size: 2rem;
+  font-style: italic;
+  font-weight: lighter;
+}
+section.home-screen .information {
+  grid-column: 1 / 4;
+  grid-row: 5 / 9;
+  background-color: transparent;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  text-transform: uppercase;
+  text-align: center;
+  padding-left: 10%;
+  letter-spacing: 1px;
+}
+section.home-screen .live-planets {
+  grid-column: -4 / -1;
+  grid-row: 5 / 9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+section.home-screen .live-planets {
+  letter-spacing: 1px;
+}
+section.home-screen .live-planets strong {
+  font-size: 4rem;
+  letter-spacing: 4px;
+  color: white;
+}
+section.home-screen .sections {
+  grid-column: 3 / -3;
+  grid-row: 9 / 12;
+  margin: 0;
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-transform: uppercase;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+}
+section.home-screen .sections .home-link {
+  text-decoration: none;
+  color: white;
+  position: relative;
+}
+.home-span {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 50%;
+  transform: translate(50%, 400%);
+  width: 30%;
+  height: 2px;
+  border-bottom: 2px solid lime;
+  transition: 1s;
+}
+.home-link:hover > .home-span {
+  width: 100%;
+}
+
+/* HowWeLookForPlanets */
+section.how-we-look-for-planets h3 {
+  grid-column: 5 / -4;
+  grid-row:  3 / 7;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  font-size: 3rem;
+  margin: 0;
+}
+@keyframes bg-anim {
+  0% {
+    background-position: left;
+  }
+  100% {
+    background-position: right;
+  }
+}
+section.how-we-look-for-planets p {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  line-height: 120%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+}
+section.how-we-look-for-planets p:nth-of-type(1) {
+  grid-column: 2 / 5;
+  grid-row: 7 / 11;
+}
+section.how-we-look-for-planets p:nth-of-type(2) {
+  grid-column: -5 / -2;
+  grid-row: 7 / 10;
+}
+section.how-we-look-for-planets .stellar-distance {
+  grid-column: 6 / 8;
+  grid-row: 8 / 11;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  text-transform: uppercase;
+  align-items: center;
+  letter-spacing: 2px;
+  height: 100%;
+  background: linear-gradient(to right,white,transparent,black,white);
+  background-clip: text;
+  background-size: 1000%;
+  color: transparent;
+  animation: bg-anim 10s infinite linear alternate;
+}
+section.how-we-look-for-planets .stellar-distance strong {
+  font-size: 200%;
+  color: red;
+}
+
+/* FindingEarthLikePlanets */
+section.finding-earth-like-planets {
+  text-transform: uppercase;
+}
+section.finding-earth-like-planets h3 {
+  grid-column: -6 / -2;
+  grid-row: 3 / 6;
+  font-size: 3rem;
+  letter-spacing: 4px;
+  margin: 0;
+}
+section.finding-earth-like-planets p {
+  margin: 0;
+  letter-spacing: 2px;
+  line-height: 120%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+section.finding-earth-like-planets p:nth-of-type(1) {
+  grid-column: 2 / 5;
+  grid-row: 4 / 7;
+}
+section.finding-earth-like-planets p:nth-of-type(1) strong {
+  color: red;
+  font-size: 120%;
+  font-weight: bold;
+  letter-spacing: 8px;
+}
+section.finding-earth-like-planets p:nth-of-type(2) {
+  grid-column: 7 / 12;
+  grid-row: 8 / 12;
+  line-height: 150%;
+}
+section.finding-earth-like-planets .ground-or-space {
+  grid-column: 2 / 5;
+  grid-row: 9 / 12;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  letter-spacing: 2px;
+}
+section.finding-earth-like-planets .ground-or-space h4 {
+  margin: 0;
+  position: absolute;
+  top: 0;
+  height: 20%;
+  text-align: center;
+  opacity: 0.5;
+}
+section.finding-earth-like-planets .ground-or-space .numbers {
+  position: absolute;
+  top: 20%;
+  height: 60%;
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  font-size: 200%;
+  opacity: 0.8;
+}
+section.finding-earth-like-planets .ground-or-space .number-tags {
+  opacity: 0.5;
+  position: absolute;
+  top: 80%;
+  height: 20%;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+}
+section.finding-earth-like-planets .ground-or-space .number-tags p {
+  letter-spacing: 5px;
+}
+
+/* TheSearchForLife */
+section.search-for-life h3 {
+  grid-column: 1 / 5;
+  grid-row: 3 / 9;
+  margin: 0;
+  text-transform: uppercase;
+  font-size: 3rem;
+  letter-spacing: 3px;
+  line-height: 200%;
+  padding-left: 5%;
+}
+section.search-for-life p {
+  margin: 0;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  line-height: 120%;
+  display: flex;
+  align-items: center;
+}
+section.search-for-life p:nth-of-type(1) {
+  grid-column: 6 / 11;
+  grid-row: 3 / 5;
+}
+section.search-for-life p:nth-of-type(2) {
+  grid-column: 6 / 11;
+  grid-row: 6 / 8;
+}
+section.search-for-life p:nth-of-type(3) {
+  grid-column: 5 / 12;
+  grid-row: 8 / 12;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+section.search-for-life p:nth-of-type(3) span {
+  font-size: 120%;
+  font-weight: bold;
+  animation: glow 3s linear infinite;
+}
+section.search-for-life .most-used-instrument {
+  grid-column: 1 / 4;
+  grid-row: 8 / 11;
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  text-align: center;
+  letter-spacing: 1px;
+  font-size: 75%;
+  background: linear-gradient(to right,white,transparent,black,white);
+  background-clip: text;
+  background-size: 1000%;
+  color: transparent;
+  animation: bg-anim 10s infinite linear alternate;
+}
+section.search-for-life .most-used-instrument strong {
+  color: red;
+  font-size: 150%;
+  font-weight: bold;
+  line-height: 50%;
+  text-shadow: 0 0 3px red;
+}
+
+/* EXPLORE */
+
+/* ExploreIntro */
+section.explore {
+  height: 100vh;
+}
+section.explore .title {
+  grid-column: 3 / -3;
+  grid-row: 2 / 7;
+  font-size: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(10%);
+}
+section.explore .title h2 {
+  margin: 0;
+  text-transform: uppercase;
+}
+section.explore .title h3 {
+  margin: 0;
+}
+section.explore .title h3:nth-of-type(1) {
+  animation: alternateTitle 3s infinite ease-in;
+}
+section.explore .title h3:nth-of-type(2) {
+  opacity: 0;
+  animation: alternateTitle 3s infinite ease-in;
+  animation-delay: 1.5s;
+  transform: translateX(-60%);
+}
+@keyframes alternateTitle {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+section.explore a {
+  text-decoration: none;
+  color: white;
+}
+section.explore .explore-radius {
+  grid-column: 7 / 12;
+  grid-row: 7 / 12;
+  /* background-color: transparent; */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  text-align: center;
+  line-height: 150%;
+}
+section.explore .explore-radius h3 {
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-weight: bold;
+}
+section.explore .explore-radius button {
+  width: 50%;
+  height: calc(20% / 5 * 6);
+  font-size: 1rem;
+  background-color: transparent;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: .5s;
+  position: relative;
+  border: none;
+  overflow: hidden;
+}
+section.explore .explore-radius button:hover {
+  background-color: white;
+  box-shadow: 0 0 5px white,
+  0 0 25px white,
+  0 0 50px white,
+  0 0 200px white;
+  color: transparent;
+  background-clip: text;
+}
+section.explore .explore-radius button:focus {
+  outline: none;
+}
+section.explore .explore-mass {
+  grid-column: 2 / 7;
+  grid-row: 7 / 12;
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  text-align: center;
+  line-height: 150%;
+}
+section.explore .explore-mass h3 {
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-weight: bold;
+}
+span.to-scale {
+  text-decoration: line-through;
+  color: red;
+  opacity: .7;
+  position: relative;
+}
+/* span.to-scale:hover {
+  cursor: pointer;
+} */
+.coming-soon {
+  display: none;
+  position: absolute;
+  top: -150%;
+  left: -50%;
+  width: 200%;
+  margin: 0;
+  font-size: 1rem;
+  text-transform: uppercase;
+  color: white;
+}
+span.to-scale:hover .coming-soon {
+  display: block;
+  transform: translateY(-100%);
+}
+section.explore .explore-mass button {
+  width: 50%;
+  height: calc(20% / 5 * 6);
+  font-size: 1rem;
+  background-color: transparent;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: .5s;
+  position: relative;
+  border: none;
+  overflow: hidden;
+}
+section.explore .explore-mass button:hover {
+  background-color: white;
+  box-shadow: 0 0 5px white,
+  0 0 25px white,
+  0 0 50px white,
+  0 0 200px white;
+  color: transparent;
+  background-clip: text;
+}
+section.explore .explore-mass button:focus {
+  outline: none;
+}
+section.explore .bottom {
+  grid-column: 2 / 12;
+  grid-row: 13;
+  height: 1px;
+  width: 100%;
+  background-color: white;
+  box-shadow: 0 0 5px .5px white,
+              0 0 15px .5px white,
+              0 0 25px .5px white;
+}
+
+/* PlanetRadius */
+section.planet-radius #radius-canvas {
+  grid-column: 3 / 11;
+  grid-row: 2 / 10;
+}
+section.planet-radius .exoplanet-radius-options {
+  grid-column: 2 / 3;
+  grid-row: 2 / 10;
+}
+section.planet-radius .exoplanet-radius-options .largest-exoplanet,
+section.planet-radius .exoplanet-radius-options .smallest-exoplanet {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50%;
+  width: 100%;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-top-left-radius: 20%;
+  border-bottom-left-radius: 20%;
+  background-clip: text;
+  box-shadow: inset 0 0 20px rgba(255,255,255,0.9);
+}
+section.planet-radius .planet-radius-options {
+  grid-column: 11 / 12;
+  grid-row: 2 / 10;
+}
+section.planet-radius .planet-radius-options .planet-earth,
+section.planet-radius .planet-radius-options .planet-jupiter,
+section.planet-radius .planet-radius-options .planet-sun{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100% / 3);
+  width: 100%;
+  text-transform: uppercase;
+  background-clip: text;
+  color: white;
+  letter-spacing: 2px;
+  border-top-right-radius: 20%;
+  border-bottom-right-radius: 20%;
+  box-shadow: inset 0 0 30px 30px black;
+}
+section.planet-radius .planet-radius-options .planet-earth {
+  background: url('./images/land_ocean_ice_cloud_2048.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+}
+section.planet-radius .planet-radius-options .planet-jupiter {
+  background: url('./images/8k_jupiter.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+}
+section.planet-radius .planet-radius-options .planet-sun {
+  background: url('./images/8k_sun.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+}
+section.planet-radius .before-load {
+  grid-column: 3 / -3;
+  grid-row: 10 / 13;
+  display: flex;
+  justify-content: center;
+  font-size: 2rem;
+  text-transform: uppercase;
+  text-align: center;
+  /* animation: glow 1s linear infinite; */
+}
+@keyframes glow {
+  50% {
+    text-shadow: 0 0 1px white,
+                0 0 5px white,
+                0 0 10px white;
+  }
+  0%,100% {
+    text-shadow: none;
+  }
+}
+section.planet-radius .name {
+  grid-column: 5 / -5;
+  grid-row: 10;
+  display: flex;
+  justify-content: center;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: 1.2rem;
+}
+section.planet-radius .volume {
+  grid-column: 5 / -5;
+  grid-row: 11 / 13;
+  color: white;
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+section.planet-radius .volume strong {
+  font-size: 3rem;
+  color: red;
+}
+section.planet-radius .orb-per {
+  grid-column: 3 / 5;
+  grid-row: 10 / 13;
+  display: flex;
+  flex-direction: column;
+  text-transform: uppercase;
+  align-items: center;
+  justify-content: flex-start;
+}
+section.planet-radius .orb-per strong {
+  font-size: 4rem;
+  color: red;
+}
+section.planet-radius .disc {
+  grid-column: 9 / 11;
+  grid-row: 10 / 13;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  text-transform: uppercase;
+}
+section.planet-radius .disc strong {
+  font-size: 4rem;
+  color: red;
+}
+section.planet-radius .bottom {
+  grid-column: 2 / 12;
+  grid-row: 13;
+  height: 1px;
+  width: 100%;
+  background-color: white;
+  box-shadow: 0 0 5px .5px white,
+              0 0 15px .5px white,
+              0 0 25px .5px white;
+}
+
+/* PlanetMass */
+section.planet-mass {
+  height: 100vh;
+  /* display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr); */
+}
+section.planet-mass #mass-canvas {
+  grid-column: 3 / 11;
+  grid-row: 2 / 10;
+  /* background-color: red; */
+}
+section.planet-mass .exoplanet-mass-options {
+  grid-column: 2 / 3;
+  grid-row: 2 / 10;
+  /* height: 100%; */
+  /* width: 20%; */
+  display: flex;
+  flex-direction: column;
+}
+section.planet-mass .exoplanet-mass-options .heaviest,
+section.planet-mass .exoplanet-mass-options .lightest {
+  height: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-top-left-radius: 20%;
+  border-bottom-left-radius: 20%;
+  box-shadow: inset 0 0 20px rgba(255,255,255,0.9);
+}
+section.planet-mass .planet-mass-options {
+  grid-column: 11 / 12;
+  grid-row: 2 / 10;
+}
+section.planet-mass .planet-mass-options .planet-earth,
+section.planet-mass .planet-mass-options .planet-jupiter
+,section.planet-mass .planet-mass-options .planet-sun 
+{
+  height: calc(100% / 3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  background-clip: text;
+  box-shadow: inset 0 0 30px 30px black;
+}
+section.planet-mass .planet-mass-options .planet-earth {
+  background: url('./images/land_ocean_ice_cloud_2048.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+}
+section.planet-mass .planet-mass-options .planet-jupiter {
+  background: url('./images/8k_jupiter.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+}
+section.planet-mass .planet-mass-options .planet-sun {
+  background: url('./images/8k_sun.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+}
+section.planet-mass .before-load {
+  grid-column: 3 / -3;
+  grid-row: 10 / 13;
+  display: flex;
+  justify-content: center;
+  font-size: 2rem;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+section.planet-mass .name {
+  grid-column: 5 / -5;
+  grid-row: 10;
+  display: flex;
+  justify-content: center;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: 1.2rem;
+}
+section.planet-mass .mass {
+  grid-column: 5 / -5;
+  grid-row: 11 / 13;
+  color: white;
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+section.planet-mass .mass strong {
+  font-size: 3rem;
+  color: red;
+}
+section.planet-mass .orb-per {
+  grid-column: 3 / 5;
+  grid-row: 10 / 13;
+  display: flex;
+  flex-direction: column;
+  text-transform: uppercase;
+  align-items: center;
+  justify-content: flex-start;
+}
+section.planet-mass .orb-per strong {
+  font-size: 4rem;
+  color: red;
+}
+section.planet-mass .disc {
+  grid-column: 9 / 11;
+  grid-row: 10 / 13;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  text-transform: uppercase;
+}
+section.planet-mass .disc strong {
+  font-size: 4rem;
+  color: red;
+}
+
+/* TAKETHETEST */
+
+/* Intro */
+section.take-the-test {
+  text-transform: uppercase;
+}
+section.take-the-test h2 {
+  grid-column: 4 / -4;
+  grid-row: 3 / 5;
+  letter-spacing: 3px;
+  justify-self: center;
+  align-self: center;
+  text-align: center;
+}
+section.take-the-test .begin-quiz {
+  grid-column: 4 / -4;
+  grid-row: 5 / 8;
+}
+section.take-the-test .my-quizzes {
+  grid-column: 4 / -4;
+  grid-row: 8 / 11;
+}
+section.take-the-test .begin-quiz,
+section.take-the-test .my-quizzes {
+  text-align: center;
+  display: flex;
+  justify-self: center;
+  align-items: center;
+  align-self: center;
+  width: 66%;
+  height: 40%;
+  position: relative;
+  text-decoration: none;
+}
+section.take-the-test .begin-quiz h3,
+section.take-the-test .my-quizzes h3 {
+  width: calc(100% / 3);
+  margin: 0;
+  letter-spacing: 1px;
+  color: white;
+}
+section.take-the-test .begin-quiz span,
+section.take-the-test .my-quizzes span {
+  width: calc(100% / 3);
+  height: 2.5px;
+  background-color: #fff;
+  transition: 1s;
+}
+section.take-the-test .begin-quiz span:nth-of-type(3),
+section.take-the-test .my-quizzes span:nth-of-type(3) {
+  position: absolute;
+  right: 0;
+  width: 0;
+  height: 0;
+  transform: translateX(20px);
+  background-color: transparent;
+  border-top: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+  border-left: 20px solid white;
+}
+.begin-quiz:hover span:nth-of-type(1), 
+.my-quizzes:hover span:nth-of-type(1) {
+  width: calc(100% / 3 * 2);
+}
+.begin-quiz:hover span:nth-of-type(2),
+.my-quizzes:hover span:nth-of-type(2) {
+  width: 0;
+}
+/* QuizContainer */
+section.quiz-container {
+  text-transform: uppercase;
+}
+section.quiz-container h3 {
+  grid-column: 3 / -3;
+  grid-row: 2 / 4;
+  justify-self: center;
+  align-self: end;
+  margin: 0;
+  font-size: 1.5rem;
+  letter-spacing: 2px;
+  text-align: center;
+}
+section.quiz-container .button-container {
+  grid-column: 3 / -3;
+  grid-row: 4 / 12;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+section.quiz-container .button-container button {
+  place-self: center;
+  height: 55%;
+  width: 75%;
+  background-color: rgba(100,100,100,0.1);
+  /* background-color: white; */
+  border-radius: 50%;
+  color: white;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-size: 1.2rem;
+  border: none;
+  box-shadow: 3px 3px 5px rgb(50,50,50),
+  -3px -3px 7px rgb(100,100,100);
+}
+section.quiz-container .button-container button:hover {
+  box-shadow: inset 3px 3px 5px rgb(50,50,50),
+  inset -3px -3px 7px rgb(100,100,100);
+  outline: none;
+}
+section.quiz-container .button-container button:focus {
+  outline: none;
+}
+
+/* MyQuizzes */
+section.my-quizzes {
+
+}
+section.my-quizzes .quiz-slider {
+  grid-column: 4 / -4;
+  grid-row: 5 / 10;
+  display: grid;
+  grid-auto-flow: column;
+  /* grid-template-columns: repeat(auto-fit, minmax(150px, auto)); */
+  grid-column-gap: 40px;
+  overflow: hidden;
+  scroll-snap-type: x mandatory;
+  overflow-x: scroll;
+}
+section.my-quizzes .quiz-slider .quiz-box {
+  scroll-snap-align: center;
+  background-color: rgba(100,100,100,0.1);
+  justify-self: center;
+  height: 100%;
+  width: 200px;
+  text-align: center;
+  border-radius: 2%;
+  display: grid;
+}
+section.my-quizzes .quiz-slider .quiz-box div {
+  margin: 0;
+  justify-self: center;
+  align-self: center;
+  font-size: 3rem;
+  font-weight: bold;
+  letter-spacing: 15px;
+}
+section.my-quizzes .quiz-slider .quiz-box div em {
+  font-size: 1rem;
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  justify-self: start;
+}
+section.my-quizzes .quiz-slider .quiz-box div:nth-of-type(2) {
+  color: red;
+  opacity: 0.4;
+  /* background-color: red; */
+}
+section.my-quizzes .quiz-slider .quiz-box div:nth-of-type(2):hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+
+/* LOGIN */
+
+/* Auth */
+section.auth {
+  text-transform: uppercase;
+}
+section.auth .error-or-loading {
+  grid-column: 4 / -4;
+  grid-row: 2 / 4;
+  justify-self: center;
+  align-self: center;
+  color: red;
+  text-transform: lowercase;
+  letter-spacing: 2px;
+}
+section.auth .error-or-loading .loading-icon {
+  background: linear-gradient(90deg, white, black);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: rotateIcon .25s linear infinite;
+  position: relative;
+}
+section.auth .error-or-loading .loading-icon span {
+  position: absolute;
+  height: 95%;
+  width: 95%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: black;
+  border-radius: 50%;
+}
+@keyframes rotateIcon {
+  0% {
+    transform: rotateZ(0deg);
+  }
+  100% {
+    transform: rotateZ(360deg);
+  }
+}
+section.auth h3 {
+  position: absolute;
+  top: 0;
+  height: 10%;
+  letter-spacing: 2px;
+  margin: 0;
+}
+section.auth form {
+  display: flex;
+  flex-direction: column;
+  align-items:  center;
+  justify-content: space-between;
+  position: relative;
+  top: 15%;
+  height: 80%;
+  width: 100%;
+}
+section.auth input {
+  outline: none;
+  border: none;
+  background-color: transparent;
+  border-bottom: white .2px solid;
+  color: white;
+  text-transform: uppercase;
+  text-align: center;
+  height: 30px;
+  font-size: 1rem;
+  padding: 2px 10px;
+}
+section.auth label {
+  display: flex;
+  font-size: 1rem;
+  flex-direction: column;
+  width: 50%;
+  text-align: center;
+  letter-spacing: 1px;
+  pointer-events: none;
+  opacity: 0.3;
+  transition: .5s;
+}
+section.auth input[type="submit"] {
+  background-image: linear-gradient(10deg, transparent 10%,rgba(100,100,100,0.1) 1%, white 20%);
+  border: none;
+  background-size: 2250% 100%;
+  background-position: left;
+  padding: 0px 20px;
+  border-radius: 3%;
+  transition: 1.5s;
+  width: 40%;
+  height: 15%;
+  color: rgb(200, 200, 200);
+  letter-spacing: 3px;
+  font-size: 120%;
+}
+section.auth input[type="submit"]:hover {
+  background-position: right;
+  color: black;
+}
+section.auth input[type="submit"]:focus {
+  box-shadow: 0 0 1px white,
+  0 0 5px white,
+  0 0 10px white;
+}
+
+/* Register */
+section.auth .register {
+  grid-column: 2 / 7;
+  grid-row: 4 / 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+section.auth .register-label {
+  transform: translateY(-180%);
+}
+.register-input:nth-of-type(1):focus ~ .register-label:nth-of-type(1),
+.register-input:nth-of-type(1):valid ~ .register-label:nth-of-type(1) {
+  transform: translateY(-300%);
+  color: red;
+  opacity: 0.7;
+  letter-spacing: 3.5px;
+}
+.register-input:nth-of-type(2):focus ~ .register-label:nth-of-type(2),
+.register-input:nth-of-type(2):valid ~ .register-label:nth-of-type(2) {
+  transform: translateY(-300%);
+  color: red;
+  opacity: 0.7;
+  letter-spacing: 3.5px;
+}
+.register-input:nth-of-type(3):focus ~ .register-label:nth-of-type(3),
+.register-input:nth-of-type(3):valid ~ .register-label:nth-of-type(3) {
+  transform: translateY(-300%);
+  color: red;
+  opacity: 0.7;
+  letter-spacing: 3.5px;
+}
+.register-input:nth-of-type(4):focus ~ .register-label:nth-of-type(4),
+.register-input:nth-of-type(4):valid ~ .register-label:nth-of-type(4) {
+  transform: translateY(-300%);
+  color: red;
+  opacity: 0.7;
+  letter-spacing: 2px;
+}
+
+/* SignIn */
+section.auth .sign-in {
+  grid-column: 7 / 12;
+  grid-row: 4 / 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+section.auth .signin-label {
+  transform: translateY(-380%);
+}
+.signin-input:nth-of-type(1):focus ~ .signin-label:nth-of-type(1), 
+.signin-input:nth-of-type(1):valid ~ .signin-label:nth-of-type(1) {
+  transform: translateY(-120%);
+  color: red;
+  opacity: 0.7;
+  letter-spacing: 3.5px;
+}
+.signin-input:nth-of-type(2):focus ~ .signin-label:nth-of-type(2),
+.signin-input:nth-of-type(2):valid ~ .signin-label:nth-of-type(2) {
+  transform: translateY(-100%);
+  color: red;
+  opacity: 0.7;
+  letter-spacing: 3.5px;
+}
+
+/* OAuth */
+section.auth .o-auth {
+  grid-column: 2 / 12;
+  grid-row: 10 / 12;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+section.auth .o-auth h4 {
+  margin: 0;
+  width: 40%;
+  text-align: center;
+  letter-spacing: 2px;
+} 
+section.auth .o-auth .google-signin {
+  background-image: url('./images/btn_google_signin_dark_disabled_web@2x.png');
+  background-size: 100% 100%;
+  width: 200px;
+  height: 50px;
+  box-shadow: inset 0 0 2px 2px black;
+  border: none;
+  background-color: lightgrey;
+}
+section.auth .o-auth .google-signin:hover,
+section.auth .o-auth .google-signin:focus {
+  background-image: url('./images/btn_google_signin_light_normal_web@2x.png');
+}
+section.auth .o-auth .google-signin:focus {
+  outline: none;
+  box-shadow: 0 0 1px white,
+  0 0 5px white,
+  0 0 10px white;
+}
